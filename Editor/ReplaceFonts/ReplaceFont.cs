@@ -1,100 +1,91 @@
-using UnityEngine;
-using UnityEditor;
-using TMPro;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.UI;
+using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Plugins
 {
     public static class ReplaceFont
     {
-        private static bool IsAssetInPackagesFolder(string assetPath)
+        public static void ReplaceFontInScene(List<Font> targetFonts, Font newFont)
         {
-            return assetPath.StartsWith("Packages/", System.StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static void ReplaceFontInScene(Font targetFont, Font newFont)
-        {
-            if (targetFont == null || newFont == null)
+            if (targetFonts == null || newFont == null || targetFonts.Count == 0)
             {
-                EditorUtility.DisplayDialog("Replace Font Result", "One or both fonts are null", "Ok");
+                EditorUtility.DisplayDialog("Replace Font Result", "One or more inputs are null or empty", "Ok");
                 return;
             }
 
             var currentScene = EditorSceneManager.GetActiveScene();
             var textComponents = Resources.FindObjectsOfTypeAll<Text>();
 
-            Undo.SetCurrentGroupName("Replace specific legacy text fonts");
+            Undo.SetCurrentGroupName("Replace multiple legacy text fonts");
 
-            int replacedCount = 0;  // Counter for replaced fonts
+            int replacedCount = 0;
 
             foreach (var component in textComponents)
             {
-                if (component.gameObject.scene != currentScene || component.font != targetFont)
+                if (component.gameObject.scene != currentScene || !targetFonts.Contains(component.font))
                     continue;
 
                 Undo.RecordObject(component, "Replace Font");
                 component.font = newFont;
-                Debug.Log($"Replaced font in: {component.name}", component);
-                replacedCount++;  // Increment counter for each replacement
+                replacedCount++;
             }
 
             Undo.IncrementCurrentGroup();
 
-            // Display a message with the count of replaced fonts
             if (replacedCount > 0)
                 EditorUtility.DisplayDialog("Replace Font Result", $"{replacedCount} fonts replaced in the scene.", "Ok");
         }
 
-        public static void ReplaceFontInScene(TMP_FontAsset targetFont, TMP_FontAsset newFont)
+        public static void ReplaceFontInScene(List<TMP_FontAsset> targetFonts, TMP_FontAsset newFont)
         {
-            if (targetFont == null || newFont == null)
+            if (targetFonts == null || newFont == null || targetFonts.Count == 0)
             {
-                EditorUtility.DisplayDialog("Replace Font Result", "One or both fonts are null", "Ok");
+                EditorUtility.DisplayDialog("Replace Font Result", "One or more inputs are null or empty", "Ok");
                 return;
             }
 
             var currentScene = EditorSceneManager.GetActiveScene();
             var textComponents = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>();
 
-            Undo.SetCurrentGroupName("Replace specific TMP fonts");
+            Undo.SetCurrentGroupName("Replace multiple TMP fonts");
 
-            int replacedCount = 0;  // Counter for replaced TMP fonts
+            int replacedCount = 0;
 
             foreach (var component in textComponents)
             {
-                if (component.gameObject.scene != currentScene || component.font != targetFont)
+                if (component.gameObject.scene != currentScene || !targetFonts.Contains(component.font))
                     continue;
 
                 Undo.RecordObject(component, "Replace Font");
                 component.font = newFont;
-                Debug.Log($"Replaced font in: {component.name}", component);
-                replacedCount++;  // Increment counter for each replacement
+                replacedCount++;
             }
 
             Undo.IncrementCurrentGroup();
-
-            // Display a message with the count of replaced TMP fonts
             if (replacedCount > 0)
                 EditorUtility.DisplayDialog("Replace Font Result", $"{replacedCount} TMP fonts replaced in the scene.", "Ok");
         }
 
-        public static void ReplaceFontInPrefabs(Font targetFont, Font newFont)
+        public static void ReplaceFontInPrefabs(List<Font> targetFonts, Font newFont)
         {
-            if (targetFont == null || newFont == null)
+            if (targetFonts == null || newFont == null || targetFonts.Count == 0)
             {
-                EditorUtility.DisplayDialog("Replace Font Result", "One or both fonts are null", "Ok");
+                EditorUtility.DisplayDialog("Replace Font Result", "One or more inputs are null or empty", "Ok");
                 return;
             }
 
             string[] prefabPaths = AssetDatabase.GetAllAssetPaths()
-                .Where(path => path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase) && !IsAssetInPackagesFolder(path))
+                .Where(path => path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
-            Undo.SetCurrentGroupName("Replace specific legacy text fonts in prefabs");
+            Undo.SetCurrentGroupName("Replace multiple legacy text fonts in prefabs");
 
-            int replacedCount = 0;  // Counter for replaced fonts in prefabs
+            int replacedCount = 0;
 
             foreach (var path in prefabPaths)
             {
@@ -104,38 +95,36 @@ namespace Plugins
 
                     foreach (var text in prefabTexts)
                     {
-                        if (text.font != targetFont)
+                        if (!targetFonts.Contains(text.font))
                             continue;
 
                         Undo.RecordObject(text, "Replace Font");
                         text.font = newFont;
-                        replacedCount++;  // Increment counter for each replacement
+                        replacedCount++;
                     }
                 }
             }
 
             Undo.IncrementCurrentGroup();
-
-            // Display a message with the count of replaced fonts in prefabs
             if (replacedCount > 0)
                 EditorUtility.DisplayDialog("Replace Font Result", $"{replacedCount} fonts replaced in prefabs.", "Ok");
         }
 
-        public static void ReplaceFontInPrefabs(TMP_FontAsset targetFont, TMP_FontAsset newFont)
+        public static void ReplaceFontInPrefabs(List<TMP_FontAsset> targetFonts, TMP_FontAsset newFont)
         {
-            if (targetFont == null || newFont == null)
+            if (targetFonts == null || newFont == null || targetFonts.Count == 0)
             {
-                EditorUtility.DisplayDialog("Replace Font Result", "One or both fonts are null", "Ok");
+                EditorUtility.DisplayDialog("Replace Font Result", "One or more inputs are null or empty", "Ok");
                 return;
             }
 
             string[] prefabPaths = AssetDatabase.GetAllAssetPaths()
-                .Where(path => path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase) && !IsAssetInPackagesFolder(path))
+                .Where(path => path.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
-            Undo.SetCurrentGroupName("Replace specific TMP fonts in prefabs");
+            Undo.SetCurrentGroupName("Replace multiple TMP fonts in prefabs");
 
-            int replacedCount = 0;  // Counter for replaced TMP fonts in prefabs
+            int replacedCount = 0;
 
             foreach (var path in prefabPaths)
             {
@@ -145,19 +134,17 @@ namespace Plugins
 
                     foreach (var text in prefabTexts)
                     {
-                        if (text.font != targetFont)
+                        if (!targetFonts.Contains(text.font))
                             continue;
 
                         Undo.RecordObject(text, "Replace Font");
                         text.font = newFont;
-                        replacedCount++;  // Increment counter for each replacement
+                        replacedCount++;
                     }
                 }
             }
 
             Undo.IncrementCurrentGroup();
-
-            // Display a message with the count of replaced TMP fonts in prefabs
             if (replacedCount > 0)
                 EditorUtility.DisplayDialog("Replace Font Result", $"{replacedCount} TMP fonts replaced in prefabs.", "Ok");
         }
