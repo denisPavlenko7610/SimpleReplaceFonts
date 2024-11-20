@@ -38,16 +38,26 @@ namespace Editors
                 newTMPFont = (TMP_FontAsset)EditorGUILayout.ObjectField("New Font", newTMPFont, typeof(TMP_FontAsset), false);
             }
 
-            if (GUILayout.Button("Replace for current scene/prefabs"))
+            if (GUILayout.Button("Replace for current scene"))
             {
                 if (fontType == FontType.LegacyText)
                 {
                     ReplaceFont.ReplaceFontInScene(targetLegacyFont, newLegacyFont);
-                    ReplaceFont.ReplaceFontInPrefabs(targetLegacyFont, newLegacyFont);
                 }
                 else
                 {
                     ReplaceFont.ReplaceFontInScene(targetTMPFont, newTMPFont);
+                }
+            }
+            
+            if (GUILayout.Button("Replace for prefabs"))
+            {
+                if (fontType == FontType.LegacyText)
+                {
+                    ReplaceFont.ReplaceFontInPrefabs(targetLegacyFont, newLegacyFont);
+                }
+                else
+                {
                     ReplaceFont.ReplaceFontInPrefabs(targetTMPFont, newTMPFont);
                 }
             }
